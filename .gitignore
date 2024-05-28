@@ -1,5 +1,6 @@
 
 venv/
+data/
 
 
 __pycache__/
@@ -9,3 +10,4 @@ __pycache__/
 .Python
 .env
 *.sqlite3
+*.npy
