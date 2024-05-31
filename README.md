@@ -1,39 +1,36 @@
-Opis projektu
-Celem projektu bylo stworzenie modelu ktory bedzie sprawdzal czy na zdjeciu wystepuje ptak czy nie. Rozwiazanie zostal zastosowane w projekcie https://github.com/bubiasz/team-project
+# 🐦 Projekt: Wykrywanie Ptaków na Zdjęciach
 
+Celem projektu było stworzenie modelu, który będzie sprawdzał, czy na zdjęciu występuje ptak, czy nie. Rozwiązanie zostało zastosowane w projekcie [Bird Species Recognition](https://github.com/bubiasz/team-project).
 
+## 📊 1. Data Set
 
-1. Data set
+Wykorzystany zbiór danych to mix CIFAR-10, COCO, Birdsnap i CUB-200-2011, co dało nam zbiór zawierający około 150 tysięcy zdjęć w dwóch kategoriach: ptak i nie-ptak.
 
-Wykorzystany DatSet to mix CIFAR-10, COCO oraz Birdsnap i CUB-200-2011 co dalo nam zbior zawierjacy okolo 150 tysiecy zdjec w dwoch kategoria ptak i nieptak,
+Największym problemem w wyszukaniu odpowiedniego zbioru było znalezienie odpowiednich datasetów, które będą jednocześnie różnorodne i nie będą zawierały ptaków. Wybór padł na CIFAR-10 i COCO, ponieważ są to bardzo duże zbiory podzielone na kategorie.
 
-Najwiekszym problemem w wyszukaniu odpowiedniego zbioru bylo znalezienia odpowiednich data setow na ktorym nie znajduja sie ptaki ktore beda jednoczesnie roznorodne, wybor padl na CIFAR-10, COCO gdyz sa ta bardzo duze zbiory podzielone na kategorie.
+## 🚀 2. Data Loader
 
-2. Data loader
+W celu przyspieszenia treningu modeli został stworzony data loader, który ma za zadanie rozdzielić oraz przetasować zdjęcia do folderów `train`, `val` oraz `test`. Po wykonaniu tej operacji następuje rescaling zdjęć do odpowiednich wymiarów.
 
-W celu przyspiesznia treningu modeli zostal stowrzony data loader ktory ma za zadanie rozdzielic oraz przetasowac zdjecia do folderow train, val oraz test. Po wykonaniu tej operacji nastepuje rescalling zdjec do odpowiednich wymiarow
+## 🧠 3. Model
 
+### MobileNetV2 (CNN, Convolutional Neural Network)
 
-3. Model
+Zaprojektowany z myślą o urządzeniach mobilnych.
 
-W celu uzyskania optymalnych wynikow postanowilismy przetestowac kilka podejsc i sprawdzic ktore jest najlepsze jednoczesnie poprawiajac bledy.
-Uzycie pretrenowanych modeli mialo zaoszczedzic czas, moc obliczeniowa oraz ulatwic wykonanie zadania.
+**Plusy:**
+- Wydajność obliczeniowa
+- Efektywność pamięciowa
+- Wszechstronność
+- Skalowalność
 
-MobileNetV2 (CNN, Convoluational Neural Network) zaprojektowany z mysla o urzadzeniach mobilnych.
+**Minusy:**
+- Mniejsza dokładność niż duże modele
+- Trudności z dostrojeniem
 
-Plusy
-+ Wydajnosc obliczeniowa
-+ Efektywnosc pamieciowa
-+ Wszechstronnosc
-+ Skalowalnosc
+#### Proces przygotowania:
 
-Minusy
-- Mniejsza dokladnosc niz duze modele
-- Trudnosci z dostrojeniem
-
-
-Proces przygotowania
-```
+```python
 def build_model(num_classes):
     # Ładowanie wstępnie wytrenowanego modelu MobileNetV2 bez górnych warstw (bez warstw klasyfikacyjnych)
     base_model = MobileNetV2(
@@ -60,59 +57,49 @@ model = build_model(num_classes)
 
 # Wyświetlenie podsumowania modelu, aby zobaczyć jego architekturę
 model.summary()
-
 ```
 
+Podczas trenowania batch_size został ustawiony na 32 ze względu na małą moc obliczeniową (przy wyższych wartościach program się crashował).
 
-Podczas trenowania batch_size zostal ustawiony na 32 co bylo spodwodowane mala moca obliczeniowa(Przy wyzszych wartosciach crashowalo program)
+### 🧩 Rezultat
 
-W celu zabezpieczenia potenacjnych przerwan treningu zostaly ustawione checkpointy po kazdej epoce zapisywane w folderze oraz funkcja ktora bedzie przywracala nasz trening do najwczescniejszej epoki.
-Testowanie na zbiorze walidacyjnym mialo za zadanie mozliwosc obserwacji live statysytk modelu co mialo zapobiegac overfittingowi..
+W modelu od około 6 epoki zaczęła spadać skuteczność na zbiorze walidacyjnym. Ostatecznie po całym treningu wybrano najkorzystniejszą wersję, która uzyskała skuteczność na zbiorze testowym na poziomie 74%, co było niesatysfakcjonującym wynikiem.
 
-Rezultat
-W modelu od okolo 6 epoki zaczala spadac skutecznosc na zbiorze walidacyjnym. Ostatecznie po calym treningu zostala wybrana najkorzystniejsza wersja ktora uzyskala skutecznosc na zbiorze testowym na poziomie 74% co bylo niesatysfakcjonujacym wynikiem.
+**Błędy w tej iteracji:**
+- Zbyt mały zbiór - wykorzystano 10% całego zbioru w celu zaoszczędzenia czasu na szkolenie.
+- Trenowanie na CPU - brak zainstalowanych CUDA i cuDNN powodował trenowanie modelu na procesorze, co znacznie wydłużyło czas treningu.
+- Brak regularyzacji - spadek efektywności mógł być spowodowany overfittingiem.
+- Nierównoważone dane - zdjęć ptaków było kilkadziesiąt procent więcej, co mogło spowodować, że model preferował tę klasę bardziej.
 
-Bledy w danej iteracji
-Zbyt maly zbior - wykorzystane zostalo 10% calego zbioru w celu zaoszczedzenia czasu na szkolenie.
-Trenowanie na CPU - brak sterownikow CUDA, cuDNN powodowaly trenowanie modelu na procesorze co prawdopobnie znacznie wydluzylo czas treningu.
-Brak regularyzcji - spadek efektynowsci mogl byc spodowoany overfittingiem.
-Nierownowazone dane - zdjec ptakow bylo kilkadzesiat procent wiecej co moglo spododowac ze model preferowal te klase bardziej
+## 🔄 Zmiana Podejścia
 
+Po uzyskaniu wyników dużo poniżej oczekiwań, postanowiliśmy zmienić podejście.
 
-Po otrzymaniu wyniku duzo ponizej oczekiwan postanowilismy na zmiana podejscia.
+### ResNet (Residual Neural Network) 
+Rodzina głębokich sieci neuronowych
 
-ResNet (Residual neural network)
+**Plusy:**
+- Wysoka dokładność
+- Efektywne trenowanie
+- Łatwiejsze dostosowanie
 
-Plusy
-+ Wysoka dokladnosc
-+ Efektyne trenowanie
-+ Latwiejsze dostosowanie
+**Minusy:**
+- Złożoność obliczeniowa
+- Większe ryzyko przeuczenia
+- Złożoność architektury
 
-Minus
-- Zlozonosc obliczeniowa
-- Wieksze ryzyko przeuczenia
-- Zlozonsc architektury
+Wybraliśmy pretrenowany model ResNet50 (wariant składający się z 50 warstw) jako kompromis pomiędzy złożonością a efektywnością.
 
-Wybor padl na uzycie pretrenowanego modelu ResNet50(wariant skladajacy sie z 50 wartstw) wydawal sie komporpmisem pomiedzy zlozonscia a efektynwoscia
+**Poprawione błędy w stosunku do poprzedniego rozwiązania:**
+- Trenowanie modelu na GPU w celu przyspieszenia procesu.
+- Zwiększenie liczności zbioru do około 50%.
+- Zbalansowanie liczności klas między bird a nonbird.
 
+### 💡 Opis Rozwiązania
 
-Poprawione bledy w stosunu do poprzedniego rozwiazania
+Klasa EarlyStopping służy do monitorowania procesu trenowania modelu i automatycznego zatrzymania treningu, jeśli wskaźnik przestaje się poprawiać. Jeśli strata walidacyjna się poprawia, model jest zapisywany, a najlepszy wynik i minimalna strata walidacyjna są aktualizowane. Po przejściu wszystkich 10 epok ostateczny model jest zapisywany w `saved_models`.
 
-Trenowanie modelu na GPU w celu przyspieszenia procesu
-Zwiekszenie licznosci zbioru do okolo 50%
-Zbalansowanie licznosci klas miedzy bird a nonbird
-
-
-Opis rozwiazania
-
-Klasa EarlyStopping sluzy do monitorowania procesu trenowania modelu i automatczniego zatrzymania treningu jesli wskaznik przestaje sie poprawiac.
-Jesli strata walidacyjna sie poprawia model jest zapisywane a najlepszy wynik i minimalna strata walidacyjna sa aktualizowane.
-Po przejsciu wszystkich 10 epok ostateczny model jest zapisywane w saved_models
-
-```
-import numpy as np
-import torch
-
+```python
 class EarlyStopping:
     def __init__(self, patience=5, verbose=False, delta=0):
         self.patience = patience          # Liczba epok bez poprawy, po której trening zostanie zatrzymany
@@ -149,8 +136,10 @@ class EarlyStopping:
         self.val_loss_min = val_loss          # Aktualizacja minimalnej straty walidacyjnej
 ```
 
+### 🔧 Przygotowanie Modelu ResNet50
 
-```# Załadowanie wstępnie wytrenowanego modelu ResNet50
+```python 
+# Załadowanie wstępnie wytrenowanego modelu ResNet50
 resnet50 = models.resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
 
 # Zamrożenie wszystkich parametrów w modelu
@@ -160,13 +149,17 @@ for param in resnet50.parameters():
 # Modyfikacja ostatniej warstwy, aby dopasować ją do liczby klas
 num_features = resnet50.fc.in_features
 resnet50.fc = nn.Linear(num_features, 2)
+
 ```
+## ❄️ Zamrożenie Wag
 Zamrożenie wag wstępnie wytrenowanego modelu pozwala na zatrzymanie procesu aktualizacji tych wag podczas treningu, co zmniejsza ryzyko przeuczenia (overfitting) i przyspiesza trening. Skupiamy się jedynie na trenowaniu nowych lub zmodyfikowanych warstw modelu.
 
 Oryginalna warstwa końcowa ResNet50 jest przystosowana do klasyfikacji na 1000 klas ImageNet. W naszym zadaniu mamy tylko dwie klasy (ptak i nie-ptak), dlatego musielismy dostosować ostatnią warstwę do tej liczby klas. Zastępując ją nową warstwą z dwoma neuronami, model może generować odpowiednie predykcje dla naszego specyficznego zadania.
 
 
-```def train_model(
+## 🏋️‍♂️ Trening Modelu”
+```python 
+def train_model(
     model,                     # Model, który będzie trenowany
     dataloaders,               # Zbiór danych treningowych i walidacyjnych w postaci słownika
     criterion,                 # Funkcja straty (loss function)
@@ -242,42 +235,50 @@ Oryginalna warstwa końcowa ResNet50 jest przystosowana do klasyfikacji na 1000 
 
 # Przypisanie DataLoaderów do zmiennej 'dataloaders'
 dataloaders = {"train": train_loader, "val": val_loader}
+
 ```
 
+W celu obserwacji historii treningu zostało dodane zapisywanie wyników, a następnie ich wizualizacja za pomocą wykresu.
 
-W celu obserwacji histori treningu zostalo dodane zapisywane wynikow a nastepnie ich wizualizacja za pomoca wykresu
+![alt text](image.png)
 
-Przebieg treningu
-Od samego poczatku skutecznosc trenowania rosla (wykluczajac jeden spadek), jednoczesnie znacznie przyspieszyl czas treningu (prawodpobonie ze wzgledu na uzycie GPU). Ostatecznie udalo sie uzyskac skutecznosc na zbiorze testowym 99% co bylo wynikiem powyzej oczekiwan
+## 📈 Przebieg Treningu
+Od samego początku skuteczność trenowania rosła (wykluczając jeden spadek), jednocześnie znacznie przyspieszył czas treningu (prawdopodobnie ze względu na użycie GPU). Ostatecznie udało się uzyskać skuteczność na zbiorze testowym 99%, co było wynikiem powyżej oczekiwań.
 
+## 🏆 Ostateczna Decyzja
 
+Wykorzystanie architektury ResNet znacząco przebiło rezultaty MobileNetV2 i zakończyło iterację w poszukiwaniu najlepszego rozwiązania
 
-Ostateczna decyzja
+### Dlaczego tak się stało?
 
-Wykorzystanie archiektury ResNet znaczaco przebilo rezultaty MobiletNetV2 i zakonczylo iteracje w poszukiwaniu najlepszego rozwiaznia.
+- Błędy metodologiczne w pierwszym modelu (niezbalansowane klasy, złe dostosowanie modelu).
+- Głębsza architektura ResNet dzięki zastosowaniu bloków resztkowych, które lepiej sprawdzają się w uchwycaniu skomplikowanych wzorców danych (np. porównanie zdjęcia ptaka i nietoperza).
+- ResNet używa większej liczby parametrów, co pozwala na modelowanie bardziej złożonych funkcji.
 
-Dlaczego tak sie stalo?
-Bledy metodologiczne w pierszym modelu (Niezbalansowane klasy, zle dostosowanie modelu)
+Model miał za zadanie działać po stronie serwera, więc większe użycie mocy obliczeniowej nie było aż tak istotne jak w przypadku aplikacji mobilnych.
 
-Glebsza architektura ResNet dzieki zastosowaniu blokow resztkowych ktora lepiej sie sprtawdza w uchwycaniu skomplikowanych wzorcow danych (np .p orownniae zdjecia ptaka i nietoperza)
+## 🛠️ Użycie Modeli
 
-ResNet uzywa wiekszej liczby paramewtrow co pozwala na modelowania bardziej zlozonych funkcji. 
+W pliku `models_predictions.ipynb` można zobaczyć przykłady użycia modeli na zdjęciach znalezionych w internecie oraz ich czasy działania, co potwierdza skuteczność ostatecznego rozwiązania.
 
-Model mial za zaadnie dzialac po stronie servera wiec wieksze uzycie mocy obliczeniowej nie bylo az tak istotne jak w przypadku aplikacji mobilnych.
+W folderze `utils` mamy zdefiniowane pliki `mn_utils.py` oraz `rn_utils.py`, z których możemy importować funkcje w celu predykcji zdjęcia (które na wejściu przyjmują ścieżkę).
 
+## 📦 Instalacja
 
+Aby uruchomić projekt, wykonaj poniższe kroki:
 
-Uzycie modeli
+1. Klonowanie repozytorium:
+    ```bash
+    git clone https://github.com/sit3kk/Bird_Detector
+    ```
 
-W models_predictions.ipynb mozemy zobaczyc przyklady uzycia modeli na zdjeciach znalezionych w internecie oraz ich czasy dzialania co potwierdza skutecznosc ostatecznego rozwiazania.
+2. Aktywacja wirtualnego środowiska:
+    ```bash
+    python -m venv venv
+    source ./venv/bin/activate
+    ```
 
-w folderze utils mamy zdefiniowane pliki mn_utils.py oraz rn_utils.py z ktorych mozemy importowac funkcje w celu predykcji zdjecia(ktore na wejsciu przyjmuja sciezke)
-
-
-Instalacja
-
-#Aktywacja wirtualnego srodowiska
-git clone https://github.com/sit3kk/Bird_Detector
-python -m venv venv
-source ./venv/bin/activate
-pip install -r requiremnets.txt
+3. Instalacja wymaganych bibliotek:
+    ```bash
+    pip install -r requirements.txt
+    ```
