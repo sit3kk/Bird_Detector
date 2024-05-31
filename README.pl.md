@@ -157,7 +157,7 @@ Zamrożenie wag wstępnie wytrenowanego modelu pozwala na zatrzymanie procesu ak
 Oryginalna warstwa końcowa ResNet50 jest przystosowana do klasyfikacji na 1000 klas ImageNet. W naszym zadaniu mamy tylko dwie klasy (ptak i nie-ptak), dlatego musielismy dostosować ostatnią warstwę do tej liczby klas. Zastępując ją nową warstwą z dwoma neuronami, model może generować odpowiednie predykcje dla naszego specyficznego zadania.
 
 
-## 🏋️‍♂️ Trening Modelu”
+## 🏋️‍♂️ Trening Modelu
 ```python 
 def train_model(
     model,                     # Model, który będzie trenowany
@@ -238,9 +238,10 @@ dataloaders = {"train": train_loader, "val": val_loader}
 
 ```
 
-W celu obserwacji historii treningu zostało dodane zapisywanie wyników, a następnie ich wizualizacja za pomocą wykresu.
+#### W celu obserwacji historii treningu zostało dodane zapisywanie wyników, a następnie ich wizualizacja za pomocą wykresu.
 
-![alt text](image.png)
+![image](https://github.com/sit3kk/Bird_Detector/assets/69002597/906e7ab9-f10a-4bb9-b2c2-07578b8a9014)
+
 
 ## 📈 Przebieg Treningu
 Od samego początku skuteczność trenowania rosła (wykluczając jeden spadek), jednocześnie znacznie przyspieszył czas treningu (prawdopodobnie ze względu na użycie GPU). Ostatecznie udało się uzyskać skuteczność na zbiorze testowym 99%, co było wynikiem powyżej oczekiwań.
