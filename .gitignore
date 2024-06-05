@@ -1,6 +1,6 @@
 
 venv/
-data/
+data/processed
 
 
 __pycache__/
