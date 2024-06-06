@@ -240,7 +240,8 @@ dataloaders = {"train": train_loader, "val": val_loader}
 
 W celu obserwacji historii treningu zostało dodane zapisywanie wyników, a następnie ich wizualizacja za pomocą wykresu.
 
-![alt text](image.png)
+![image](https://github.com/sit3kk/Bird_Detector/assets/69002597/a0383c80-bb6d-404b-8e26-74f63fd8662d)
+
 
 ## 📈 Przebieg Treningu
 Od samego początku skuteczność trenowania rosła (wykluczając jeden spadek), jednocześnie znacznie przyspieszył czas treningu (prawdopodobnie ze względu na użycie GPU). Ostatecznie udało się uzyskać skuteczność na zbiorze testowym 99%, co było wynikiem powyżej oczekiwań.
