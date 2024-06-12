@@ -1,3 +1,5 @@
+[EN](README.md) | [PL](README_pl.md)
+
 # 🐦 Projekt: Wykrywanie Ptaków na Zdjęciach
 
 Celem projektu było stworzenie modelu, który będzie sprawdzał, czy na zdjęciu występuje ptak, czy nie. Rozwiązanie zostało zastosowane w projekcie [Bird Species Recognition](https://github.com/bubiasz/team-project).

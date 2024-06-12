@@ -1,3 +1,5 @@
+[EN](README.md) | [PL](README_pl.md)
+
 # 🐦 Project: Bird Detection in Images
 
 The goal of the project was to create a model that checks whether a bird is present in a photo or not. The solution was applied in the project [Bird Species Recognition](https://github.com/bubiasz/team-project).
